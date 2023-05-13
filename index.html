@@ -3,17 +3,95 @@
     <head>
         <title>Jsoneng Notes App</title>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                background-color: #f4f4f4;
+            }
+            h1 {
+                color: #333;
+            }
+            #notes p {
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #fff;
+                margin-bottom: 10px;
+            }
+            button {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                margin: 10px 0;
+                cursor: pointer;
+                color: #fff;
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                opacity: 0.8;
+            }
+
+            #createBtn {
+                background-color: #4caf50;
+            }
+
+            #createBtn:hover {
+                background-color: #45a049;
+            }
+
+            #readBtn {
+                background-color: #2196f3;
+            }
+
+            #readBtn:hover {
+                background-color: #0b7dda;
+            }
+
+            #updateBtn {
+                background-color: #ff9800;
+            }
+
+            #updateBtn:hover {
+                background-color: #e68a00;
+            }
+
+            #patchBtn {
+                background-color: #9c27b0;
+            }
+
+            #patchBtn:hover {
+                background-color: #89229b;
+            }
+
+            #deleteBtn {
+                background-color: #f44336;
+            }
+
+            #deleteBtn:hover {
+                background-color: #da190b;
+            }
+            input,
+            textarea {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+            }
+        </style>
     </head>
     <body>
         <h1>Jsoneng Notes App</h1>
         <input type="text" id="keyInput" placeholder="Key" />
         <textarea id="valueInput" placeholder="Value"></textarea>
         <button id="createBtn">Create</button>
+        <button id="readBtn">Read</button>
         <button id="updateBtn">Update</button>
         <button id="patchBtn">Patch</button>
         <button id="deleteBtn">Delete</button>
         <div id="notes"></div>
-
         <script>
             async function loadNotes() {
                 const data = await $.get("http://localhost:3000/read", {
@@ -42,6 +120,26 @@
                             }),
                             dataType: "json",
                         });
+                        loadNotes();
+                    }
+                });
+
+                $("#readBtn").click(async function () {
+                    const key = $("#keyInput").val();
+                    if (key.trim() !== "") {
+                        const data = await $.ajax({
+                            url: "http://localhost:3000/read",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                key: key,
+                                dir: "notes",
+                            }),
+                            dataType: "json",
+                        });
+                        $("#notes").empty();
+                        $("#notes").append(`<p>${key}: ${data}</p>`);
+                    } else {
                         loadNotes();
                     }
                 });
