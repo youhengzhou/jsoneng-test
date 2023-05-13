@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Jsoneng Notes App</title>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    </head>
+    <body>
+        <h1>Jsoneng Notes App</h1>
+        <input type="text" id="keyInput" placeholder="Key" />
+        <textarea id="valueInput" placeholder="Value"></textarea>
+        <button id="createBtn">Create</button>
+        <button id="updateBtn">Update</button>
+        <button id="patchBtn">Patch</button>
+        <button id="deleteBtn">Delete</button>
+        <div id="notes"></div>
+
+        <script>
+            async function loadNotes() {
+                const data = await $.get("http://localhost:3000/read", {
+                    dir: "notes",
+                });
+                $("#notes").empty();
+                for (const key in data) {
+                    $("#notes").append(`<p>${key}: ${data[key]}</p>`);
+                }
+            }
+
+            $(document).ready(function () {
+                loadNotes();
+
+                $("#createBtn").click(async function () {
+                    const key = $("#keyInput").val();
+                    const value = $("#valueInput").val();
+                    if (key.trim() !== "" && value.trim() !== "") {
+                        await $.ajax({
+                            url: "http://localhost:3000/create",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                data: { [key]: value },
+                                dir: "notes",
+                            }),
+                            dataType: "json",
+                        });
+                        loadNotes();
+                    }
+                });
+
+                $("#updateBtn").click(async function () {
+                    const key = $("#keyInput").val();
+                    const value = $("#valueInput").val();
+                    if (key.trim() !== "" && value.trim() !== "") {
+                        await $.ajax({
+                            url: "http://localhost:3000/update",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                data: { [key]: value },
+                                dir: "notes",
+                            }),
+                            dataType: "json",
+                        });
+                        loadNotes();
+                    }
+                });
+
+                $("#patchBtn").click(async function () {
+                    const key = $("#keyInput").val();
+                    const value = $("#valueInput").val();
+                    if (key.trim() !== "" && value.trim() !== "") {
+                        await $.ajax({
+                            url: "http://localhost:3000/patch",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                data: { [key]: value },
+                                dir: "notes",
+                            }),
+                            dataType: "json",
+                        });
+                        loadNotes();
+                    }
+                });
+
+                $("#deleteBtn").click(async function () {
+                    const key = $("#keyInput").val();
+                    if (key.trim() !== "") {
+                        await $.ajax({
+                            url: "http://localhost:3000/delete",
+                            type: "DELETE",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                dir: "notes",
+                            }),
+                            dataType: "json",
+                        });
+                        loadNotes();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
